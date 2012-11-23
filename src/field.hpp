@@ -23,8 +23,6 @@
 #ifndef FIELD_HPP
 #	define FIELD_HPP
 
-#	include <iostream>
-
 	class Field
 	{
 		public:

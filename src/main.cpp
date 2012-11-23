@@ -20,6 +20,8 @@
  * 
  * g++ -std=c++11 -o sudoku-solve src/*.cpp
  */
+#include <iostream>
+#include <fstream>
 #include "sudoku.hpp"
 
 int main (int argc, char **argv)
@@ -28,34 +30,40 @@ int main (int argc, char **argv)
 	 * Variable declarations:
 	*/
 	Sudoku sudoku;
-	// RELATIV SCHWER:
-	/*unsigned int values[81] = {
-		1,0,3,0,0,5,0,4,0,
-		0,4,0,9,2,8,6,0,1,
-		0,6,8,3,0,0,2,0,0,
-		0,5,0,6,3,0,0,0,0,
-		0,0,0,1,0,2,0,0,0,
-		0,0,6,0,0,0,9,7,0,
-		8,0,0,0,9,0,4,0,0,
-		0,7,0,4,8,6,0,0,5,
-		0,0,0,0,0,0,0,0,0
-	};*/
-	// SEHR EINFACH:
-	unsigned int values[81] = {
-		6,5,1,2,0,4,3,0,7,
-		4,7,3,0,9,6,0,0,8,
-		2,0,8,5,3,7,1,6,4,
-		7,4,9,8,6,3,2,1,5,
-		3,2,6,7,5,1,4,8,9,
-		8,1,5,0,2,9,7,0,6,
-		0,8,7,0,4,2,6,0,0,
-		0,6,4,3,1,0,9,7,2,
-		9,3,2,6,7,5,0,4,0
+	int i, j;
+	unsigned int values[81];
+	std::ifstream file;
+	std::string line;
+	/*
+	 * Read sudoku from file:
+	*/
+	if (argc < 2)
+	{
+		std::cerr << "Usage: " << argv[0] << " file" << std::endl;
+		return 1;
 	};
+	file.open(argv[1], std::ios::in);
+	if (!file.is_open())
+	{
+		std::cerr << argv[1] << ": Failed to open sudoku." << std::endl;
+		return 1;
+	};
+	for (i=0; i < 9; i++)
+	{
+		getline(file, line);
+		for (j=0; j < 9; j++)
+		{
+			values[(i*9+j)] = atoi(line.substr(j, 1).c_str());
+		}
+	}
+	file.close();
 	/*
 	 * Fill:
 	*/
 	sudoku.fill(values);
+	/*
+	 * Solve:
+	*/
 	sudoku.solve();
 	return 0;
 }
