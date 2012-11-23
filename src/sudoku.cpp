@@ -107,7 +107,7 @@ void Sudoku::fill_suggestions(void)
 				 * row_number = i/9
 				 * range = (i/9)*9 ... ((i/9)*9)+8
 				*/
-				for (k=(i/9)*9; k < ((i/9)*9)+9; k++)
+				for (k=(i/9)*9; k <= ((i/9)*9)+8; k++)
 				{
 					if (m_fields[k].get_solution() == j)
 					{
@@ -121,7 +121,7 @@ void Sudoku::fill_suggestions(void)
 				 * Run through the column:
 				 * column_number = i-((i/9)*9)
 				*/
-				for (k=i-((i/9)*9); k < (i-((i/9)*9))+(8*9); k += 9)
+				for (k=i-((i/9)*9); k <= (i-((i/9)*9))+(8*9); k += 9)
 				{
 					if (m_fields[k].get_solution() == j)
 					{
