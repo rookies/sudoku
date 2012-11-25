@@ -46,10 +46,15 @@
 		private:
 			void fill_suggestions(void);
 			bool try_numbers(void);
+			bool try_numbers_step3(void);
 			bool is_suggestion_already_checked(int field, int suggestion);
+			bool is_suggestion_already_checked_step3(int field, int suggestion);
+			void get_blockfields(int field, int *blockfields);
 
 			Field m_fields[81];
 			Field m_fields_bak[81];
-			FieldSuggestionPair m_checked_suggestions[162];
+			Field m_fields_bak2[81];
+			FieldSuggestionPair m_checked_suggestions[729];
+			FieldSuggestionPair m_checked_suggestions_step3[729];
 	};
 #endif // SUDOKU_HPP
