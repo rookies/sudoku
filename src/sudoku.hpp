@@ -25,7 +25,13 @@
 
 #	include <iostream>
 #	include "field.hpp"
-
+	
+	struct FieldSuggestionPair
+	{
+		int field;
+		int suggestion;
+	};
+	
 	class Sudoku
 	{
 		public:
@@ -36,12 +42,14 @@
 			void fill(unsigned int values[81]);
 			void dump(void);
 			void dump_suggestions(void);
+			bool is_solved(void);
 		private:
 			void fill_suggestions(void);
-			void refill_suggestions(unsigned int field, unsigned int value);
+			bool try_numbers(void);
+			bool is_suggestion_already_checked(int field, int suggestion);
 
 			Field m_fields[81];
-			bool m_solved;
-			bool m_filled;
+			Field m_fields_bak[81];
+			FieldSuggestionPair m_checked_suggestions[162];
 	};
 #endif // SUDOKU_HPP

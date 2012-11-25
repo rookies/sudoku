@@ -23,9 +23,17 @@
 #include "sudoku.hpp"
 #undef DEBUG
 
-Sudoku::Sudoku() : m_solved(false), m_filled(false)
+Sudoku::Sudoku()
 {
-	
+	int i;
+	/*
+	 * Init checked suggestions:
+	*/
+	for (i=0; i < 162; i++)
+	{
+		m_checked_suggestions[i].field = -1;
+		m_checked_suggestions[i].suggestion = -1;
+	}
 }
 Sudoku::~Sudoku()
 {
@@ -78,6 +86,79 @@ bool Sudoku::solve(void)
 			};
 		}
 	}
+	/*
+	 * Check if we solved the sudoku:
+	*/
+	if (is_solved())
+	{
+		std::cout << "SOLVED after Step#1 (Fill suggestions)" << std::endl;
+		return true;
+	};
+	/*
+	 * Try some numbers:
+	*/
+	while (try_numbers())
+	{
+		/*
+		 * Fill suggestions:
+		*/
+		failed = false;
+		while (!failed)
+		{
+			fill_suggestions();
+			dump();
+			dump_suggestions();
+			failed = true;
+			for (i=0; i < 81; i++)
+			{
+				if (m_fields[i].get_suggestions_count() == 1 && m_fields[i].get_solution() == 0)
+				{
+					for (j=0; j < 9; j++)
+					{
+						if (m_fields[i].get_suggestions()[j] != 0)
+						{
+							m_fields[i].set_solution(m_fields[i].get_suggestions()[j]);
+							m_fields[i].rm_suggestion(m_fields[i].get_suggestions()[j]);
+							failed = false;
+							break;
+						};
+					}
+				};
+			}
+		}
+		if (is_solved())
+		{
+			std::cout << "SOLVED after Step#2 (Try numbers)" << std::endl;
+			return true;
+		};
+		/*
+		 * Recreate fields:
+		*/
+		for (i=0; i < 81; i++)
+			m_fields[i] = m_fields_bak[i];
+	}
+	if (is_solved())
+	{
+		std::cout << "SOLVED after Step#2 (Try numbers)" << std::endl;
+		return true;
+	}
+	else
+	{
+		std::cout << "SOLVE FAILED (no fields with only two suggestions)" << std::endl;
+	};
+	return false;
+}
+bool Sudoku::is_solved(void)
+{
+	int i;
+	/*
+	 * Check fields:
+	*/
+	for (i=0; i < 81; i++)
+	{
+		if (m_fields[i].get_solution() == 0)
+			return false;
+	}
 	return true;
 }
 void Sudoku::fill_suggestions(void)
@@ -95,9 +176,6 @@ void Sudoku::fill_suggestions(void)
 		{
 			/*
 			 * Field is not filled!
-			*/
-			//std::cout << "Block number: " << std::endl;
-			/*
 			 * Run through numbers:
 			*/
 			for (j=1; j <= 9; j++)
@@ -158,6 +236,83 @@ void Sudoku::fill_suggestions(void)
 		}
 	}
 }
+bool Sudoku::try_numbers(void)
+{
+	int i, j;
+	int result = -1;
+	int suggestion;
+	int suggnr;
+	/*
+	 * Backup fields:
+	*/
+	for (i=0; i < 81; i++)
+		m_fields_bak[i] = m_fields[i];
+	/*
+	 * Run through fields:
+	*/
+	for (i=0; i < 81; i++)
+	{
+		suggestion = -1;
+		if (m_fields[i].get_suggestions_count() == 2)
+		{
+			/*
+			 * Get the suggestion:
+			*/
+			for (j=0; j < 9; j++)
+			{
+				if (m_fields[i].get_suggestions()[j] != 0)
+				{
+					if (!is_suggestion_already_checked(i, m_fields[i].get_suggestions()[j]))
+					{
+						suggestion = m_fields[i].get_suggestions()[j];
+						break;
+					};
+				};
+			}
+		};
+		if (suggestion != -1)
+		{
+			result = i;
+			break;
+		};
+	}
+	if (result == -1)
+	{
+		return false;
+	}
+	else
+	{
+		/*
+		 * Mark it as checked:
+		*/
+		for (i=0; i < 162; i++)
+		{
+			if (m_checked_suggestions[i].field == -1)
+			{
+				suggnr = i;
+				break;
+			};
+		}
+		m_checked_suggestions[suggnr].field = result;
+		m_checked_suggestions[suggnr].suggestion = suggestion;
+		/*
+		 * ... and set the solution to it:
+		*/
+		m_fields[result].set_solution(suggestion);
+		std::cout << "===== Trying " << suggestion << " in " << result << " =====" << std::endl;
+		return true;
+	};
+}
+bool Sudoku::is_suggestion_already_checked(int field, int suggestion)
+{
+	int i;
+	for (i=0; i < 162; i++)
+	{
+		if (m_checked_suggestions[i].field == field && m_checked_suggestions[i].suggestion == suggestion)
+			return true;
+	}
+	return false;
+}
 void Sudoku::dump(void)
 {
 	int i;
@@ -192,8 +347,4 @@ void Sudoku::dump_suggestions(void)
 			std::cout << std::endl;
 		};
 	}
-}
-void Sudoku::refill_suggestions(unsigned int field, unsigned int value)
-{
-
 }
