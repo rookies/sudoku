@@ -23,7 +23,7 @@
 #include "sudoku.hpp"
 #undef DEBUG
 
-Sudoku::Sudoku()
+Sudoku::Sudoku() : m_stats_step1(0), m_stats_step2(0), m_stats_step3(0)
 {
 	int i;
 	/*
@@ -90,6 +90,7 @@ bool Sudoku::solve(void)
 				}
 			};
 		}
+		m_stats_step1++;
 	}
 	/*
 	 * Check if we solved the sudoku:
@@ -97,6 +98,7 @@ bool Sudoku::solve(void)
 	if (is_solved())
 	{
 		std::cout << "SOLVED after Step#1 (Fill suggestions)" << std::endl;
+		stats();
 		return true;
 	};
 	/*
@@ -134,6 +136,7 @@ bool Sudoku::solve(void)
 		if (is_solved())
 		{
 			std::cout << "SOLVED after Step#2 (Try one number)" << std::endl;
+			stats();
 			return true;
 		};
 		/*
@@ -141,10 +144,12 @@ bool Sudoku::solve(void)
 		*/
 		for (i=0; i < 81; i++)
 			m_fields[i] = m_fields_bak[i];
+		m_stats_step2++;
 	}
 	if (is_solved())
 	{
 		std::cout << "SOLVED after Step#2 (Try one number)" << std::endl;
+		stats();
 		return true;
 	};
 	/*
@@ -216,6 +221,7 @@ bool Sudoku::solve(void)
 			if (is_solved())
 			{
 				std::cout << "SOLVED after Step#3 (Try two numbers)" << std::endl;
+				stats();
 				return true;
 			};
 			/*
@@ -223,6 +229,7 @@ bool Sudoku::solve(void)
 			*/
 			for (i=0; i < 81; i++)
 				m_fields[i] = m_fields_bak2[i];
+			m_stats_step3++;
 		}
 		/*
 		 * Restore fields:
@@ -233,13 +240,19 @@ bool Sudoku::solve(void)
 	if (is_solved())
 	{
 		std::cout << "SOLVED after Step#3 (Try two numbers)" << std::endl;
+		stats();
 		return true;
-	}
-	else
-	{
-		std::cout << "SOLVE FAILED (no success with trying two numbers)" << std::endl;
 	};
+	std::cout << "SOLVE FAILED (no success with trying two numbers)" << std::endl;
+	stats();
 	return false;
+}
+void Sudoku::stats(void)
+{
+	std::cout << "== STATS ==" << std::endl;
+	std::cout << "Rounds Step#1: " << m_stats_step1 << std::endl;
+	std::cout << "Rounds Step#2: " << m_stats_step2 << std::endl;
+	std::cout << "Rounds Step#3: " << m_stats_step3 << std::endl;
 }
 bool Sudoku::is_solved(void)
 {

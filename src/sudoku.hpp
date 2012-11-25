@@ -50,11 +50,15 @@
 			bool is_suggestion_already_checked(int field, int suggestion);
 			bool is_suggestion_already_checked_step3(int field, int suggestion);
 			void get_blockfields(int field, int *blockfields);
+			void stats(void);
 
 			Field m_fields[81];
 			Field m_fields_bak[81];
 			Field m_fields_bak2[81];
 			FieldSuggestionPair m_checked_suggestions[729];
 			FieldSuggestionPair m_checked_suggestions_step3[729];
+			int m_stats_step1;
+			int m_stats_step2;
+			int m_stats_step3;
 	};
 #endif // SUDOKU_HPP
