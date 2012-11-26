@@ -42,11 +42,23 @@ int main (int argc, char **argv)
 		std::cerr << "Usage: " << argv[0] << " file" << std::endl;
 		return 1;
 	};
-	file.open(argv[1], std::ios::in);
-	if (!file.is_open())
+	if (std::string(argv[1]).compare("-") == 0)
 	{
-		std::cerr << argv[1] << ": Failed to open sudoku." << std::endl;
-		return 1;
+		file.open("/dev/stdin", std::ios::in);
+		if (!file.is_open())
+		{
+			std::cerr << "Failed to open stdin." << std::endl;
+			return 1;
+		};
+	}
+	else
+	{
+		file.open(argv[1], std::ios::in);
+		if (!file.is_open())
+		{
+			std::cerr << argv[1] << ": Failed to open sudoku." << std::endl;
+			return 1;
+		};
 	};
 	for (i=0; i < 9; i++)
 	{
