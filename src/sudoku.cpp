@@ -232,6 +232,14 @@ bool Sudoku::solve(void)
 			m_stats_step3++;
 		}
 		/*
+		 * Clear checked suggestions:
+		*/
+		for (i=0; i < 729; i++)
+		{
+			m_checked_suggestions_step3[i].field = -1;
+			m_checked_suggestions_step3[i].suggestion = -1;
+		}
+		/*
 		 * Restore fields:
 		*/
 		for (i=0; i < 81; i++)
